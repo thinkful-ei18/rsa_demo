@@ -3,10 +3,13 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const {PORT, CLIENT_ORIGIN} = require('./config');
-const {dbConnect} = require('./db-mongoose');
+// const {dbConnect} = require('./db-mongoose');
 // const {dbConnect} = require('./db-knex');
 
 const app = express();
+
+// body parser middleware
+app.use(express.json())
 
 app.use(
     morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
@@ -20,6 +23,29 @@ app.use(
     })
 );
 
+/*====================
+    Routers Mounting
+*/
+const rsaRounter = require('./routers/rsa.route')
+app.use('/crypt',rsaRounter)
+
+// Catch-all 404
+app.use(function(req, res, next) {
+	const err = new Error('Not Found')
+	err.status = 404
+	next(err)
+})
+
+// Catch-all Error handler
+// Add NODE_ENV check to prevent stacktrace leak
+app.use(function(err, req, res, next) {
+	res.status(err.status || 500)
+	res.json({
+		message: err.message,
+		error: app.get('env') === 'development' ? err : {}
+	})
+})
+
 function runServer(port = PORT) {
     const server = app
         .listen(port, () => {
@@ -32,7 +58,7 @@ function runServer(port = PORT) {
 }
 
 if (require.main === module) {
-    dbConnect();
+    // dbConnect();
     runServer();
 }
 
