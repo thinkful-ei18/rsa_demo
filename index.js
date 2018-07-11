@@ -55,7 +55,7 @@ function runServer(port = PORT) {
             console.error('Express failed to start');
             console.error(err);
         });
-}
+} 
 
 if (require.main === module) {
     // dbConnect();
