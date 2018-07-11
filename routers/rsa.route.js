@@ -36,7 +36,6 @@ router.get('/private-key',async(req,res,next)=> {
         if(!magic_num) throw new Error('access denied')
         const hashedMagicNum = await magicNumberHashingAsync(magic_num)
         const privateKey = await fetchPrivateKeyAsync(hashedMagicNum)
-        console.log(privateKey)
         res.status(200).json({privateKey})
         
     }catch(err){
